@@ -1,17 +1,18 @@
 package tunnel
 
 import (
+	"errors"
+	"log"
 	"net"
 )
 
 type BaseTunnel struct {
-	InputChan  chan string
-	OutputChan chan string
-	Args       map[string]string
+	In_Conn net.Conn
+	Args    map[string]string
 }
 
 type Tunnel interface {
-	Setup(in chan string, out chan string)
+	ConnectionHandler(in_conn net.Conn)
 }
 
 var tunnelList = map[string]Tunnel{}
@@ -22,27 +23,31 @@ func Register(name string, t Tunnel) {
 
 }
 
-func TcpListener() {
-	// Listen on TCP port 2000 on all interfaces.
-	l, err := net.Listen("tcp", ":2000")
+func GetTunnel(name string) Tunnel {
+
+	return tunnelList[name]
+
+}
+
+func Listener(proto string, address string, tunnel_type string) error {
+
+	t := GetTunnel(tunnel_type)
+	if t == nil {
+		return errors.New("Invalid tunnel type '" + tunnel_type + "'")
+	}
+
+	l, err := net.Listen(proto, address)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer l.Close()
 	for {
-		// Wait for a connection.
 		conn, err := l.Accept()
 		if err != nil {
 			log.Fatal(err)
 		}
-		// Handle the connection in a new goroutine.
-		// The loop then returns to accepting, so that
-		// multiple connections may be served concurrently.
-		go func(c net.Conn) {
-			// Echo all incoming data.
-			io.Copy(c, c)
-			// Shut down the connection.
-			c.Close()
-		}(conn)
+		go t.ConnectionHandler(conn)
 	}
+
+	return nil
 }
