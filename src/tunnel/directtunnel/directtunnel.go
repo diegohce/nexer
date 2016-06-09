@@ -6,10 +6,19 @@ import (
 
 type DirectTunnel struct {
 	tunnel.BaseTunnel
-	ListenAddress string `toml:listen`
 }
 
-type (t *DirectTunnel) Setup( in, out chan string) {
+func init() {
+	tunnel.Register("direct", &DirectTunnel{})
+}
+
+func (t *DirectTunnel) New() *DirectTunnel {
+
+	return &DirectTunnel{}
+
+}
+
+func (t *DirectTunnel) Setup(in chan string, out chan string) {
 	t.InputChan = in
 	t.OutputChan = out
 }
