@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"tunnel"
@@ -62,6 +63,14 @@ func main() {
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)
+	}
+
+	if list_tunnels {
+		fmt.Println("Available tunnel types:")
+		for _, t := range tunnel.TunnelsList() {
+			fmt.Printf("\t%s\n", t)
+		}
+		os.Exit(0)
 	}
 
 	if address == "" {

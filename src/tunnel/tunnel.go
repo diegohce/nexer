@@ -28,6 +28,14 @@ func Register(name string, t TunnelMaker) {
 
 }
 
+func TunnelsList() []string {
+	var l []string
+	for t, _ := range tunnelList {
+		l = append(l, t)
+	}
+	return l
+}
+
 func GetTunnel(name string) Tunnel {
 
 	t := tunnelList[name]
