@@ -12,12 +12,17 @@ type BaseTunnel struct {
 }
 
 type Tunnel interface {
+	Setup(tunnel_args []string) error
 	ConnectionHandler(in_conn net.Conn)
 }
 
-var tunnelList = map[string]Tunnel{}
+type TunnelMaker interface {
+	New() Tunnel
+}
 
-func Register(name string, t Tunnel) {
+var tunnelList = map[string]TunnelMaker{}
+
+func Register(name string, t TunnelMaker) {
 
 	tunnelList[name] = t
 
@@ -25,15 +30,23 @@ func Register(name string, t Tunnel) {
 
 func GetTunnel(name string) Tunnel {
 
-	return tunnelList[name]
+	t := tunnelList[name]
+	if t == nil {
+		return nil
+	}
+
+	return t.New()
 
 }
 
-func Listener(proto string, address string, tunnel_type string) error {
+func Listener(proto string, address string, tunnel_type string, tunnel_args []string) error {
 
 	t := GetTunnel(tunnel_type)
 	if t == nil {
 		return errors.New("Invalid tunnel type '" + tunnel_type + "'")
+	}
+	if err := t.Setup(tunnel_args); err != nil {
+		return err
 	}
 
 	l, err := net.Listen(proto, address)

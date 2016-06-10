@@ -14,9 +14,32 @@ func init() {
 	tunnel.Register("echo", &EchoTunnel{})
 }
 
-func (t *EchoTunnel) New() *EchoTunnel {
+func (t *EchoTunnel) New() tunnel.Tunnel {
 
 	return &EchoTunnel{}
+
+}
+
+func (t *EchoTunnel) Setup(tunnel_args []string) error {
+
+	//	fs := flag.NewFlagSet("nexer", flag.ExitOnError)
+
+	//	fs.StringVar(&address, "bind", "", "Bind [address]:port")
+	//	fs.StringVar(&protocol, "proto", "tcp", "Protocol [tcp/udp]")
+	//	fs.StringVar(&tunnel_type, "tunnel", "echo", "Tunnel type (see --tunnels)")
+	//	fs.BoolVar(&list_tunnels, "tunnels", false, "Tunnels list")
+
+	//	if len(nexer_args) == 0 {
+	//		nexer_args = append(nexer_args, "--help")
+	//	}
+
+	//	err := fs.Parse(nexer_args)
+	//	if err != nil {
+	//		log.Println(err)
+	//		os.Exit(1)
+	//	}
+
+	return nil
 
 }
 
