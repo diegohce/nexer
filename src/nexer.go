@@ -8,6 +8,7 @@ import (
 	"tunnel"
 	_ "tunnel/directtunnel"
 	_ "tunnel/echotunnel"
+	_ "tunnel/urltunnel"
 )
 
 func split_args() ([]string, []string) {
