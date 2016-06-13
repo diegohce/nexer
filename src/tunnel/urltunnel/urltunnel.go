@@ -2,6 +2,7 @@ package urltunnel
 
 import (
 	"bufio"
+	"errors"
 	"flag"
 	"io"
 	"log"
@@ -41,6 +42,10 @@ func (t *UrlTunnel) Setup(tunnel_args []string) error {
 	err := fs.Parse(tunnel_args)
 	if err != nil {
 		return err
+	}
+
+	if t.Prod == "" || t.Debug == "" {
+		return errors.New("--prod and --debug params are required")
 	}
 
 	t.Proto = "tcp"
