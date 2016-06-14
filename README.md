@@ -52,7 +52,20 @@ Redirects to -prod. If ```debug=1``` is present in the querystring, redirects to
 # Extending nexer (new tunnel dev)
 
 The easiest way to commence is to look at the 
-[echo tunnel](https://github.com/diegohce/nexer/blob/master/src/tunnel/echotunnel/echotunnel.go) and the [direct tunnel](https://github.com/diegohce/nexer/blob/master/src/tunnel/directtunnel/directtunnel.go) as an example.
+[echo tunnel](https://github.com/diegohce/nexer/blob/master/src/tunnel/echotunnel/echotunnel.go) and the 
+[direct tunnel](https://github.com/diegohce/nexer/blob/master/src/tunnel/directtunnel/directtunnel.go) as an example.
+
+Also check the ```import``` statement in [nexer.go](https://github.com/diegohce/nexer/blob/master/src/nexer.go)
+where tunnels **must** be imported to be available.
+
+## Building 
+
+After setting Go environment values 
+([goenv.sh](https://github.com/diegohce/nexer/blob/master/goenv.sh) might help), 
+go to ```src``` directory and run from the command line:
+
+```go build nexer.go```
+
 
 
 
