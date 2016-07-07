@@ -28,8 +28,8 @@ func (t *DirectTunnel) Setup(tunnel_args []string) error {
 
 	fs := flag.NewFlagSet("direct", flag.ExitOnError)
 
-	fs.StringVar(&t.Dest, "dest", "", "Destination [address]:port")
-	fs.StringVar(&t.Proto, "proto", "tcp", "Protocol [tcp/udp]")
+	fs.StringVar(&t.Dest, "dest", "", "Destination address:port")
+	fs.StringVar(&t.Proto, "proto", "tcp", "Protocol (tcp/udp)")
 
 	if len(tunnel_args) == 0 {
 		tunnel_args = append(tunnel_args, "--help")
@@ -52,8 +52,12 @@ func (t *DirectTunnel) ConnectionHandler(in_conn net.Conn) {
 	}
 	defer out_conn.Close()
 
+	log.Println("Connection to", t.Dest, "established")
+
 	io.Copy(out_conn, in_conn)
 
 	in_conn.Close()
+
+	log.Println("Connection to", t.Dest, "Closed")
 
 }
