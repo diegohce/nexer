@@ -6,7 +6,7 @@ import (
 	"crypto/tls"
 	"flag"
 	"fmt"
-	"io"
+	//	"io"
 	"log"
 	"net"
 	"net/http"
@@ -33,7 +33,7 @@ func (t *PipTunnel) Setup(tunnel_args []string) error {
 
 	fs := flag.NewFlagSet("pip", flag.ExitOnError)
 
-	fs.StringVar(&t.Dest, "dest", "pypi.python.org", "Destination pip servername")
+	fs.StringVar(&t.Dest, "dest", "pypi.python.org", "Destination pip servername (will use https port 443 always!)")
 
 	//	if len(tunnel_args) == 0 {
 	//		tunnel_args = append(tunnel_args, "--help")
@@ -52,24 +52,9 @@ func (t *PipTunnel) Setup(tunnel_args []string) error {
 
 func (t *PipTunnel) ConnectionHandler(in_conn net.Conn) {
 
-	//Search works like a charm!
-	//TODO: Install reuses the connection and we're not expecting that here
-
 	defer in_conn.Close()
 
-	in_buffer := bufio.NewReader(in_conn)
-	in_req, err := http.ReadRequest(in_buffer)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	in_req.Host = t.Dest
-
-	//	log.Println(in_req)
-
 	log.Println("Connecting to", t.Dest)
-
 	out_conn, err := tls.Dial(t.Proto, fmt.Sprintf("%s:443", t.Dest), &tls.Config{InsecureSkipVerify: true})
 	if err != nil {
 		log.Fatalln(err)
@@ -78,8 +63,35 @@ func (t *PipTunnel) ConnectionHandler(in_conn net.Conn) {
 
 	log.Println("Connected to", t.Dest)
 
-	in_req.Write(out_conn)
-	io.Copy(in_conn, out_conn)
+	for {
+
+		in_buffer := bufio.NewReader(in_conn)
+		in_req, err := http.ReadRequest(in_buffer)
+		if err != nil {
+			log.Println(err)
+			break
+		}
+
+		in_req.Host = t.Dest
+
+		log.Println(in_req)
+
+		in_req.Write(out_conn)
+		//      _, err = io.Copy(in_conn, out_conn)
+		//		if err != nil {
+		//			log.Println(err)
+		//			break
+		//		}
+
+		response, err := http.ReadResponse(bufio.NewReader(out_conn), in_req)
+		if err != nil {
+			log.Println(err)
+			break
+		}
+
+		response.Write(in_conn)
+
+	}
 
 	log.Println("Closing connection with", t.Dest)
 

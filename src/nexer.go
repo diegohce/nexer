@@ -42,6 +42,7 @@ func main() {
 	var protocol string
 	var tunnel_type string
 	var list_tunnels bool
+	var show_version bool
 
 	nexer_args, tunnel_args := split_args()
 
@@ -56,6 +57,7 @@ func main() {
 	fs.StringVar(&protocol, "proto", "tcp", "Protocol [tcp/udp]")
 	fs.StringVar(&tunnel_type, "tunnel", "echo", "Tunnel type (see --tunnels)")
 	fs.BoolVar(&list_tunnels, "tunnels", false, "Tunnels list")
+	fs.BoolVar(&show_version, "version", false, "Shows nexer version")
 
 	if len(nexer_args) == 0 {
 		nexer_args = append(nexer_args, "--help")
@@ -65,6 +67,11 @@ func main() {
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)
+	}
+
+	if show_version {
+		fmt.Printf("This is Nexer v%s (%s)\n", VERSION, VERSION_NAME)
+		os.Exit(0)
 	}
 
 	if list_tunnels {
