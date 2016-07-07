@@ -14,6 +14,8 @@ Usage of nexer:
     	Tunnel type (see --tunnels) (default "echo")
   -tunnels
     	Tunnels list
+  -version
+    	Shows nexer current version
 ```
 
 # Available tunnels
