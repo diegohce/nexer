@@ -21,13 +21,14 @@ Usage of nexer:
 Available tunnel types:
 	direct
 	echo
+	pip
 	url
 ```
 
-## echo
+## echo tunnel
 Echo has no arguments. Implements an echo server.
 
-## direct
+## direct tunnel
 
 Direct tunnel redirection
 
@@ -38,8 +39,42 @@ Usage of direct:
   -proto string
     	Protocol [tcp/udp] (default "tcp")
 ```
+## pip tunnel
 
-## url
+Tunnel to pip service (python packages index)
+
+```
+Usage of pip:
+  -dest string
+    	Destination pip servername (will use https port 443 always!) (default "pypi.python.org")
+```
+
+### Create the pip tunnel
+
+To create a tunnel simply run:
+```
+# ./nexer -bind :3143 -tunnel pip
+```
+
+### Installing python packages using the pip tunnel
+
+```
+pip install --index-url "http://yourserver:3143/simple/" <python-package-name>
+```
+
+or
+
+```
+pip install --index-url "http://yourserver:3143/simple/" -r requirements.txt
+```
+
+### Searching for packages using the pip tunnel
+
+```
+pip search --index http://yourserver:3143/pypi <python-package-name>
+```
+
+## url tunnel
 ```
 Usage of url:
   -debug string
