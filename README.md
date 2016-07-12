@@ -24,6 +24,7 @@ Available tunnel types:
 	direct
 	echo
 	pip
+	apt
 	url
 ```
 
