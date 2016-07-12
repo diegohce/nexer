@@ -108,9 +108,9 @@ pip search --index http://yourserver:3143/pypi <python-package-name>
 ```
 Usage of url:
   -debug string
-    	Destination [address]:port
+    	Destination address:port
   -prod string
-    	Destination [address]:port
+    	Destination address:port
 ```
 Redirects to -prod. If ```debug=1``` is present in the querystring, redirects to -debug
 
