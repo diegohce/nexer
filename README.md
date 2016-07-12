@@ -76,6 +76,26 @@ pip install --index-url "http://yourserver:3143/simple/" -r requirements.txt
 pip search --index http://yourserver:3143/pypi <python-package-name>
 ```
 
+## apt tunnel/proxy
+
+To create the tunnel run:
+```
+# ./nexer -bind :3142 -tunnel apt
+```
+
+### To use apt-get with the tunnel
+
+```
+# apt-get -o "Acquire::http::proxy=http://yourserver:3142" update
+```
+
+or
+
+```
+# apt-get -o "Acquire::http::proxy=http://yourserver:3142" install <package name>
+```
+
+
 ## url tunnel
 ```
 Usage of url:
