@@ -41,6 +41,32 @@ Usage of direct:
   -proto string
     	Protocol [tcp/udp] (default "tcp")
 ```
+
+## apt tunnel/proxy
+
+```
+Usage of apt:
+  -log-requests
+    	Show http requests (default false)
+```
+
+To create the tunnel run:
+```
+# ./nexer -bind :3142 -tunnel apt
+```
+
+### To use apt-get with the tunnel
+
+```
+# apt-get -o "Acquire::http::proxy=http://yourserver:3142" update
+```
+
+or
+
+```
+# apt-get -o "Acquire::http::proxy=http://yourserver:3142" install <package name>
+```
+
 ## pip tunnel
 
 Tunnel to pip service (python packages index)
@@ -74,25 +100,6 @@ pip install --index-url "http://yourserver:3143/simple/" -r requirements.txt
 
 ```
 pip search --index http://yourserver:3143/pypi <python-package-name>
-```
-
-## apt tunnel/proxy
-
-To create the tunnel run:
-```
-# ./nexer -bind :3142 -tunnel apt
-```
-
-### To use apt-get with the tunnel
-
-```
-# apt-get -o "Acquire::http::proxy=http://yourserver:3142" update
-```
-
-or
-
-```
-# apt-get -o "Acquire::http::proxy=http://yourserver:3142" install <package name>
 ```
 
 
