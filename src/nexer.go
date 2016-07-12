@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"tunnel"
+	_ "tunnel/apttunnel"
 	_ "tunnel/directtunnel"
 	_ "tunnel/echotunnel"
 	_ "tunnel/piptunnel"
