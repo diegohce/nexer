@@ -38,7 +38,7 @@ Direct tunnel redirection
 ```
 Usage of direct:
   -dest string
-    	Destination [address]:port
+    	Destination address:port
   -proto string
     	Protocol [tcp/udp] (default "tcp")
 ```
