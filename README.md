@@ -25,6 +25,7 @@ Available tunnel types:
 	echo
 	pip
 	apt
+	apt-experimental
 	url
 ```
 
@@ -43,7 +44,9 @@ Usage of direct:
     	Protocol [tcp/udp] (default "tcp")
 ```
 
-## apt tunnel/proxy
+## apt / apt-experimental tunnel
+
+The apt-experimental tunnel is expected to be faster and more reliable than the plain apt tunnel.
 
 ```
 Usage of apt:
@@ -54,6 +57,8 @@ Usage of apt:
 To create the tunnel run:
 ```
 # ./nexer -bind :3142 -tunnel apt
+or
+# ./nexer -bind :3142 -tunnel apt-experimental
 ```
 
 ### To use apt-get with the tunnel
