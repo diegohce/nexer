@@ -1,6 +1,6 @@
 package main
 
 const (
-	VERSION      = "1.1.1"
-	VERSION_NAME = "Billy"
+	VERSION      = "1.2.1"
+	VERSION_NAME = "Finn"
 )
