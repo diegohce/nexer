@@ -20,7 +20,7 @@ type XMLRequest struct {
 
 
 
-func xmlParse(xmldoc string) (string,string,string, error){
+func (t *HttpContentTunnel) xmlParse(xmldoc string) (string,string,string, error){
 
 	var xr XMLRequest
 

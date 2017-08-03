@@ -16,9 +16,8 @@ import (
 
 type HttpContentTunnel struct {
 	tunnel.BaseTunnel
-	Proto string
-	Prod  string
-	Debug string
+	RulesFile string
+	Rules [][]string
 }
 
 func init() {
@@ -35,8 +34,7 @@ func (t *HttpContentTunnel) Setup(tunnel_args []string) error {
 
 	fs := flag.NewFlagSet("httpcontent", flag.ExitOnError)
 
-	fs.StringVar(&t.Prod, "prod", "", "Destination [address]:port")
-	fs.StringVar(&t.Debug, "debug", "", "Destination [address]:port")
+	fs.StringVar(&t.RulesFile, "rules-file", "", "File with routing rules")
 
 	if len(tunnel_args) == 0 {
 		tunnel_args = append(tunnel_args, "--help")
@@ -47,19 +45,21 @@ func (t *HttpContentTunnel) Setup(tunnel_args []string) error {
 		return err
 	}
 
-	if t.Prod == "" || t.Debug == "" {
-		return errors.New("--prod and --debug params are required")
+	if t.RulesFile == "" {
+		return errors.New("--rules-file not specified")
 	}
 
-	t.Proto = "tcp"
+	if err := t.readRules(); err != nil {
+		return err
+	}
+
+	t.getHostByRules("function", "target", "terminalid")
 
 	return nil
 
 }
 
 func (t *HttpContentTunnel) ConnectionHandler(in_conn net.Conn) {
-
-	//var out_conn_addr string
 
 	defer in_conn.Close()
 
@@ -82,7 +82,7 @@ func (t *HttpContentTunnel) ConnectionHandler(in_conn net.Conn) {
 
 	log.Println("BODY TWO", string(b2))
 
-	ws_function, ws_target, ws_terminalid, err := xmlParse(b)
+	ws_function, ws_target, ws_terminalid, err := t.xmlParse(b)
 
 	log.Println("HEADERS ONE", in_req.Header)
 	log.Println("HEADERS TWO", in_req2.Header)
@@ -90,19 +90,13 @@ func (t *HttpContentTunnel) ConnectionHandler(in_conn net.Conn) {
 	log.Println("FUNCTION", ws_function, "TARGET", ws_target, "TERMINALID", ws_terminalid)
 
 
+	hostport, err := t.getHostByRules(ws_function, ws_target, ws_terminalid)
+
+	log.Println(hostport)
+
 	in_conn.Write([]byte("200 OK\r\n\r\n"))
 
-	/*query := in_req.URL.Query()
-
-	if _, ok := query["debug"]; ok {
-		out_conn_addr = t.Debug
-	} else {
-		out_conn_addr = t.Prod
-	}
-
-	log.Println(out_conn_addr)
-
-	out_conn, err := net.Dial(t.Proto, out_conn_addr)
+	/*out_conn, err := net.Dial("tcp", hostport)
 	if err != nil {
 		log.Fatalln(err)
 	}
