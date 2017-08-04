@@ -1,10 +1,16 @@
 package httpcontent
 
 import (
-	"fmt"
+	"log"
 	"io/ioutil"
 	"encoding/json"
 )
+
+
+type hostByRule struct {
+	hostname string
+	rewrite  string
+}
 
 
 func (t *HttpContentTunnel) readRules() error {
@@ -18,18 +24,44 @@ func (t *HttpContentTunnel) readRules() error {
 		return err
 	}
 
+	for _, rule := range t.Rules {
+		log.Println("RULES", rule)
+	}
+
 	return nil
 }
 
 
 
-func (t *HttpContentTunnel) getHostByRules(function_name, target, terminalid string) (string, error) {
+func (t *HttpContentTunnel) getHostByRules(function_name, target, terminalid string) (*hostByRule, error) {
+
+	var hostport string
+	var rewrite string
 
 	for _, rule := range t.Rules {
-		fmt.Println(rule)
+
+		//fmt.Println("RULES", rule)
+		hostport = rule[4]
+		rewrite = rule[3]
+
+		if rule[0] == "*" && rule[1] == "*" && rule[2] == "*" {
+			break
+		} else if rule[0] == function_name && rule[1] == "*" && rule[2] == "*" {
+			break
+		} else if rule[0] == "*" && rule[1] == target && rule[2] == "*" {
+			break
+		} else if rule[0] == "*" && rule[1] == "*" && rule[2] == terminalid {
+			break
+		} else if rule[0] == function_name && rule[1] == target && rule[2] == "*" {
+			break
+		} else if rule[0] == function_name && rule[1] == target && rule[2] == terminalid {
+			break
+		} else if rule[0] == "*" && rule[1] == target && rule[2] == terminalid {
+			break
+		}
 	}
 
-	return "defaulthostport", nil
+	return &hostByRule{hostname: hostport, rewrite: rewrite}, nil
 }
 
 
