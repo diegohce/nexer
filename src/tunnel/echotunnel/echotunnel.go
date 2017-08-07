@@ -4,6 +4,7 @@ package echotunnel
 
 import (
 	"io"
+	"log"
 	"net"
 	"tunnel"
 )
@@ -46,7 +47,8 @@ func (t *EchoTunnel) Setup(tunnel_args []string) error {
 }
 
 func (t *EchoTunnel) ConnectionHandler(in_conn net.Conn) {
-	t.In_Conn = in_conn
+
+	log.Println("Received connection from", t.In_Conn.RemoteAddr().String())
 
 	io.Copy(in_conn, in_conn)
 

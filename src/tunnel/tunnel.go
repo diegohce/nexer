@@ -11,18 +11,20 @@ type BaseTunnel struct {
 	Args    map[string]string
 }
 
-type Tunnel interface {
-	Setup(tunnel_args []string) error
-	ConnectionHandler(in_conn net.Conn)
+func (t *BaseTunnel) SetConn(conn net.Conn) {
+	t.In_Conn = conn
 }
 
-type TunnelMaker interface {
+type Tunnel interface {
+	SetConn(net.Conn)
+	Setup(tunnel_args []string) error
+	ConnectionHandler(in_conn net.Conn)
 	New() Tunnel
 }
 
-var tunnelList = map[string]TunnelMaker{}
+var tunnelList = map[string]Tunnel{}
 
-func Register(name string, t TunnelMaker) {
+func Register(name string, t Tunnel) {
 
 	tunnelList[name] = t
 
@@ -67,6 +69,7 @@ func Listener(proto string, address string, tunnel_type string, tunnel_args []st
 		if err != nil {
 			log.Fatal(err)
 		}
+		t.SetConn(conn)
 		go t.ConnectionHandler(conn)
 	}
 

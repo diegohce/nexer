@@ -64,7 +64,6 @@ func (t *HttpContentTunnel) Setup(tunnel_args []string) error {
 func (t *HttpContentTunnel) ConnectionHandler(in_conn net.Conn) {
 
 	defer in_conn.Close()
-	t.In_Conn = in_conn
 
 	remote_addr := "[" + in_conn.RemoteAddr().String() + "]"
 
@@ -86,18 +85,16 @@ func (t *HttpContentTunnel) ConnectionHandler(in_conn net.Conn) {
 	b2, _ := url.QueryUnescape(string(body2))
 	log.Println("BODY TWO", string(b2))*/
 
-	ws_function, ws_target, ws_terminalid, err := t.xmlParse(b)
-
 	/*log.Println("HEADERS ONE", in_req.Header)
 	log.Println("HEADERS TWO", in_req2.Header)*/
+
+	ws_function, ws_target, ws_terminalid, err := t.xmlParse(b)
 
 	log.Println(remote_addr, "RULES", "FUNCTION", ws_function, "TARGET", ws_target, "TERMINALID", ws_terminalid)
 
 	hostbyrule, err := t.getHostByRules(ws_function, ws_target, ws_terminalid)
 
 	log.Println(remote_addr, "RULES", hostbyrule)
-
-	//in_conn.Write([]byte("200 OK\r\n\r\n"))
 
 	log.Println(remote_addr, in_req2.URL)
 
