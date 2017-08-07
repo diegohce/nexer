@@ -64,6 +64,9 @@ func (t *HttpContentTunnel) Setup(tunnel_args []string) error {
 func (t *HttpContentTunnel) ConnectionHandler(in_conn net.Conn) {
 
 	defer in_conn.Close()
+	t.In_Conn = in_conn
+
+	remote_addr := "[" + in_conn.RemoteAddr().String() + "]"
 
 	in_buffer := bufio.NewReader(in_conn)
 	in_req, err := http.ReadRequest(in_buffer)
@@ -88,25 +91,25 @@ func (t *HttpContentTunnel) ConnectionHandler(in_conn net.Conn) {
 	/*log.Println("HEADERS ONE", in_req.Header)
 	log.Println("HEADERS TWO", in_req2.Header)*/
 
-	log.Println("RULES", "FUNCTION", ws_function, "TARGET", ws_target, "TERMINALID", ws_terminalid)
+	log.Println(remote_addr, "RULES", "FUNCTION", ws_function, "TARGET", ws_target, "TERMINALID", ws_terminalid)
 
 	hostbyrule, err := t.getHostByRules(ws_function, ws_target, ws_terminalid)
 
-	log.Println("RULES", hostbyrule)
+	log.Println(remote_addr, "RULES", hostbyrule)
 
 	//in_conn.Write([]byte("200 OK\r\n\r\n"))
 
-	log.Println(in_req2.URL)
+	log.Println(remote_addr, in_req2.URL)
 
 	if hostbyrule.rewrite != "" {
 		in_req2.URL, _ = in_req2.URL.Parse(hostbyrule.rewrite)
-		log.Println("URL Changed to", in_req2.URL)
+		log.Println(remote_addr, "URL Changed to", in_req2.URL)
 	}
 
 
 	out_conn, err := net.Dial("tcp", hostbyrule.hostname)
 	if err != nil {
-		log.Println(err)
+		log.Println(remote_addr, err)
 		//REMOVE!!!!!!
 		//REMOVE!!!!!!
 		in_conn.Write([]byte("200 OK\r\n\r\n"))
