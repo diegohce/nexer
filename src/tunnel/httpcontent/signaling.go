@@ -1,3 +1,5 @@
+// +build httpcontent all
+
 package httpcontent
 
 

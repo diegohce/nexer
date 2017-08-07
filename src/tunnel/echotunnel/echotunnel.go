@@ -1,3 +1,5 @@
+// +build echo all
+
 package echotunnel
 
 import (

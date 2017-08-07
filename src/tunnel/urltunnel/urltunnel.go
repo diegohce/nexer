@@ -1,3 +1,5 @@
+// +build url all
+
 package urltunnel
 
 import (

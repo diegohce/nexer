@@ -1,3 +1,5 @@
+// +build apt all
+
 package apttunnel
 
 import (

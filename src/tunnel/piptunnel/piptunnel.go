@@ -1,3 +1,5 @@
+// +build pip all
+
 package piptunnel
 
 import (
