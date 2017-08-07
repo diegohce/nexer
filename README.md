@@ -134,7 +134,7 @@ After setting Go environment values
 ([goenv.sh](https://github.com/diegohce/nexer/blob/master/goenv.sh) might help), 
 go to ```src``` directory and run from the command line:
 
-```go build nexer.go version.go```
+```go build -tags all nexer.go version.go```
 
 
 
