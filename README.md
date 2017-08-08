@@ -42,6 +42,9 @@ Usage of direct:
     	Destination address:port
   -proto string
     	Protocol [tcp/udp] (default "tcp")
+  -write-delay int
+      	Write delay in seconds (default 0)
+
 ```
 
 ## apt / apt-experimental tunnel
