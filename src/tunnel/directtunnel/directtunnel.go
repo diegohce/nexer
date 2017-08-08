@@ -1,3 +1,5 @@
+// +build direct all
+
 package directtunnel
 
 import (
