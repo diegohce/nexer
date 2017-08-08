@@ -42,6 +42,11 @@ func (t *DirectTunnel) Setup(tunnel_args []string) error {
 		return err
 	}
 
+	if t.Delay < 0 {
+		log.Println("Write delay cannot be less than zero. Setting write-delay = 0")
+		t.Delay = 0
+	}
+
 	return nil
 
 }
