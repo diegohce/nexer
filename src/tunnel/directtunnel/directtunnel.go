@@ -12,6 +12,7 @@ type DirectTunnel struct {
 	tunnel.BaseTunnel
 	Proto string
 	Dest  string
+	Delay int
 }
 
 func init() {
@@ -30,6 +31,7 @@ func (t *DirectTunnel) Setup(tunnel_args []string) error {
 
 	fs.StringVar(&t.Dest, "dest", "", "Destination address:port")
 	fs.StringVar(&t.Proto, "proto", "tcp", "Protocol (tcp/udp)")
+	fs.IntVar(&t.Delay, "write-delay", 0, "Write delay in seconds")
 
 	if len(tunnel_args) == 0 {
 		tunnel_args = append(tunnel_args, "--help")
@@ -54,10 +56,16 @@ func (t *DirectTunnel) ConnectionHandler(in_conn net.Conn) {
 
 	log.Println("Connection to", t.Dest, "established")
 
-	io.Copy(out_conn, in_conn)
+	dw := NewDelayedWriter(out_conn, t.Delay)
+
+	io.Copy(dw, in_conn)
+	//io.Copy(out_conn, in_conn)
 
 	in_conn.Close()
 
 	log.Println("Connection to", t.Dest, "Closed")
 
 }
+
+
+
