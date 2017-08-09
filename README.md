@@ -21,12 +21,24 @@ Usage of nexer:
 # Available tunnels
 ```
 Available tunnel types:
+	connectionpool
 	direct
 	echo
 	pip
 	apt
 	apt-experimental
 	url
+```
+
+## connectionpool
+
+Connection pooling between nexer and -dest
+```
+Usage of connectionpool:
+  -dest string
+    	Destination address:port
+  -pool-size int
+    	Connection pool size (default 1)
 ```
 
 ## echo tunnel

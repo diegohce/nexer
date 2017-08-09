@@ -1,8 +1,8 @@
 package main
 
 const (
-	VERSION      = "1.1.2"
-	VERSION_NAME = "Ice King"
+	VERSION      = "1.1.3"
+	VERSION_NAME = "Panda"
 )
 
 
