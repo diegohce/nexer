@@ -67,7 +67,13 @@ func (t *ConnectionPool) Setup(tunnel_args []string) error {
 
 func (t *ConnectionPool) ConnectionHandler(in_conn net.Conn) {
 
+	chash := t.connectionHash()
+
+	log.Println(chash, "Waiting for spot")
+
 	spot := <-t.Pool
+
+	log.Println("Pool state:", len(t.Pool) , "/", cap(t.Pool) )
 
 	out_conn, err := net.Dial(t.Proto, t.Dest)
 	if err != nil {
@@ -75,7 +81,7 @@ func (t *ConnectionPool) ConnectionHandler(in_conn net.Conn) {
 	}
 	defer out_conn.Close()
 
-	log.Println(spot, "Connection to", t.Dest, "established")
+	log.Println(chash, spot, "Connection to", t.Dest, "established")
 
 	go func() {
 		io.Copy(in_conn, out_conn)
@@ -85,10 +91,17 @@ func (t *ConnectionPool) ConnectionHandler(in_conn net.Conn) {
 
 	in_conn.Close()
 
-	log.Println(spot, "Connection to", t.Dest, "Closed")
+	log.Println(chash, spot, "Connection to", t.Dest, "Closed")
+
+	log.Println(chash, spot, "Releasing spot")
+
 	t.Pool <-spot
 
+	log.Println("Pool state:", len(t.Pool) , "/", cap(t.Pool) )
 }
+
+
+
 
 
 
