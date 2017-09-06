@@ -35,6 +35,7 @@ Available tunnel types:
 
 Sends the same request to both ```-main``` and ```-forward-to``` hosts. Responses from ```-forward-to``` host are logged into ```-logfile``` or to standard output.
 
+```
 Usage of tee:
   -forward-to string
     	Where to forward requests to
@@ -42,6 +43,8 @@ Usage of tee:
     	Where to log the forwarded responses (default "(stdout)")
   -main string
     	Real request/endpoint destination
+```
+
 
 ## connectionpool
 
