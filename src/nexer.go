@@ -12,6 +12,7 @@ import (
 	_ "tunnel/piptunnel"
 	_ "tunnel/urltunnel"
 	_ "tunnel/connectionpool"
+	_ "tunnel/teetunnel"
 )
 
 func split_args() ([]string, []string) {
