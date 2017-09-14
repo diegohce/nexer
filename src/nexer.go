@@ -13,6 +13,7 @@ import (
 	_ "tunnel/urltunnel"
 	_ "tunnel/httpcontent"
 	_ "tunnel/connectionpool"
+	_ "tunnel/teetunnel"
 )
 
 func split_args() ([]string, []string) {

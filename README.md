@@ -21,6 +21,7 @@ Usage of nexer:
 # Available tunnels
 ```
 Available tunnel types:
+	tee
 	connectionpool
 	direct
 	echo
@@ -29,6 +30,21 @@ Available tunnel types:
 	apt-experimental
 	url
 ```
+
+## tee tunnel
+
+Sends the same request to both ```-main``` and ```-forward-to``` hosts. Responses from ```-forward-to``` host are logged into ```-logfile``` or to standard output.
+
+```
+Usage of tee:
+  -forward-to string
+    	Where to forward requests to
+  -logfile string
+    	Where to log the forwarded responses (default "(stdout)")
+  -main string
+    	Real request/endpoint destination
+```
+
 
 ## connectionpool
 
