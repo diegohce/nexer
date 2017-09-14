@@ -109,7 +109,7 @@ func (t *HttpContentTunnel) ConnectionHandler(in_conn net.Conn) {
 		log.Println(remote_addr, err)
 		//REMOVE!!!!!!
 		//REMOVE!!!!!!
-		in_conn.Write([]byte("200 OK\r\n\r\n"))
+		//in_conn.Write([]byte("200 OK\r\n\r\n"))
 		//REMOVE!!!!!!
 		//REMOVE!!!!!!
 		return
