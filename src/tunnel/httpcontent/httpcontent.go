@@ -98,13 +98,16 @@ func (t *HttpContentTunnel) ConnectionHandler(in_conn net.Conn) {
 
 	log.Println(remote_addr, in_req2.URL)
 
+	in_req2.Host = hostbyrule.host
+	//log.Println(remote_addr, "Dest Host header value", in_req2.Host)
+
 	if hostbyrule.rewrite != "" {
 		in_req2.URL, _ = in_req2.URL.Parse(hostbyrule.rewrite)
 		log.Println(remote_addr, "URL Changed to", in_req2.URL)
 	}
 
 
-	out_conn, err := net.Dial("tcp", hostbyrule.hostname)
+	out_conn, err := net.Dial("tcp", hostbyrule.hostport)
 	if err != nil {
 		log.Println(remote_addr, err)
 		//REMOVE!!!!!!

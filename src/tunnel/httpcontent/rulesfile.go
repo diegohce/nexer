@@ -4,13 +4,15 @@ package httpcontent
 
 import (
 	"log"
+	"strings"
 	"io/ioutil"
 	"encoding/json"
 )
 
 
 type hostByRule struct {
-	hostname string
+	host     string
+	hostport string
 	rewrite  string
 }
 
@@ -36,7 +38,7 @@ func (t *HttpContentTunnel) readRules() error {
 
 
 func (t *HttpContentTunnel) getHostByRules(function_name, target, terminalid string) (*hostByRule, error) {
-
+	var host string
 	var hostport string
 	var rewrite string
 
@@ -45,6 +47,7 @@ func (t *HttpContentTunnel) getHostByRules(function_name, target, terminalid str
 		//fmt.Println("RULES", rule)
 		hostport = rule[4]
 		rewrite = rule[3]
+		host = strings.SplitN(hostport, ":", 2)[0]
 
 		if rule[0] == "*" && rule[1] == "*" && rule[2] == "*" {
 			break
@@ -63,7 +66,7 @@ func (t *HttpContentTunnel) getHostByRules(function_name, target, terminalid str
 		}
 	}
 
-	return &hostByRule{hostname: hostport, rewrite: rewrite}, nil
+	return &hostByRule{host:host, hostport: hostport, rewrite: rewrite}, nil
 }
 
 
