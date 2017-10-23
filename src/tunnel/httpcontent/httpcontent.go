@@ -3,6 +3,7 @@
 package httpcontent
 
 import (
+	"strings"
 	"bufio"
 	"bytes"
 	"errors"
@@ -80,13 +81,14 @@ func (t *HttpContentTunnel) ConnectionHandler(in_conn net.Conn) {
 
 	in_req2, err := http.NewRequest(in_req.Method, in_req.URL.String(), bytes.NewReader(body))
 	in_req2.Header = in_req.Header
+	in_req2.Header.Set("X-Forwarded-For", strings.SplitN(remote_addr, ":", 2)[0])
 
 	/*body2, _ := ioutil.ReadAll(in_req2.Body)
 	b2, _ := url.QueryUnescape(string(body2))
 	log.Println("BODY TWO", string(b2))*/
 
-	/*log.Println("HEADERS ONE", in_req.Header)
-	log.Println("HEADERS TWO", in_req2.Header)*/
+	//log.Println("HEADERS ONE", in_req.Header)
+	//log.Println("HEADERS TWO", in_req2.Header)
 
 	ws_function, ws_target, ws_terminalid, err := t.xmlParse(b)
 
