@@ -81,7 +81,7 @@ func (t *HttpContentTunnel) ConnectionHandler(in_conn net.Conn) {
 
 	in_req2, err := http.NewRequest(in_req.Method, in_req.URL.String(), bytes.NewReader(body))
 	in_req2.Header = in_req.Header
-	in_req2.Header.Set("X-Forwarded-For", strings.SplitN(remote_addr, ":", 2)[0])
+	in_req2.Header.Set("X-Forwarded-For", strings.SplitN(in_conn.RemoteAddr().String(), ":", 2)[0])
 
 	/*body2, _ := ioutil.ReadAll(in_req2.Body)
 	b2, _ := url.QueryUnescape(string(body2))
