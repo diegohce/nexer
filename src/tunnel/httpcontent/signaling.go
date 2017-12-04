@@ -1,4 +1,5 @@
 // +build httpcontent all
+// +build !windows
 
 package httpcontent
 
