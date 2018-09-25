@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net"
+	"sync"
 	"tunnel"
 )
 
@@ -55,9 +56,12 @@ func (t *DirectTunnel) Setup(tunnel_args []string) error {
 
 func (t *DirectTunnel) ConnectionHandler(in_conn net.Conn) {
 
+	defer in_conn.Close()
+
 	out_conn, err := net.Dial(t.Proto, t.Dest)
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
+		return
 	}
 	defer out_conn.Close()
 
@@ -65,10 +69,24 @@ func (t *DirectTunnel) ConnectionHandler(in_conn net.Conn) {
 
 	dw := NewDelayedWriter(out_conn, t.Delay)
 
-	io.Copy(dw, in_conn)
-	//io.Copy(out_conn, in_conn)
+	wg := &sync.WaitGroup{}
+	wg.Add(2)
 
-	in_conn.Close()
+	go func(w *sync.WaitGroup) {
+		defer w.Done()
+		io.Copy(dw, in_conn)
+		log.Println("Closing 1")
+		out_conn.Close()
+	}(wg)
+
+	go func(w *sync.WaitGroup) {
+		defer w.Done()
+		io.Copy(in_conn, out_conn)
+		log.Println("Closing 2")
+		in_conn.Close()
+	}(wg)
+
+	wg.Wait()
 
 	log.Println("Connection to", t.Dest, "Closed")
 

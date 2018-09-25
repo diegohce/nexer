@@ -8,6 +8,7 @@ import (
 	"log"
 	"net"
 	"errors"
+	"sync"
 	"tunnel"
 )
 
@@ -67,6 +68,8 @@ func (t *ConnectionPool) Setup(tunnel_args []string) error {
 
 func (t *ConnectionPool) ConnectionHandler(in_conn net.Conn) {
 
+	defer in_conn.Close()
+
 	chash := t.connectionHash()
 
 	log.Println(chash, "Waiting for spot")
@@ -77,19 +80,31 @@ func (t *ConnectionPool) ConnectionHandler(in_conn net.Conn) {
 
 	out_conn, err := net.Dial(t.Proto, t.Dest)
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
+		return
 	}
 	defer out_conn.Close()
 
 	log.Println(chash, spot, "Connection to", t.Dest, "established")
 
+	wg := &sync.WaitGroup{}
+	wg.Add(2)
+
 	go func() {
+		defer wg.Done()
 		io.Copy(in_conn, out_conn)
+		in_conn.Close()
 	}()
 
-	io.Copy(out_conn, in_conn)
+	go func() {
+		defer wg.Done()
+		io.Copy(out_conn, in_conn)
+		out_conn.Close()
+	}()
 
-	in_conn.Close()
+	wg.Wait()
+
+	//in_conn.Close()
 
 	log.Println(chash, spot, "Connection to", t.Dest, "Closed")
 
