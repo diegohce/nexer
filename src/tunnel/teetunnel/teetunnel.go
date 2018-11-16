@@ -3,17 +3,14 @@
 package teetunnel
 
 import (
-	"bufio"
-	"bytes"
 	"errors"
 	"flag"
 	"os"
 	"io"
-	"io/ioutil"
 	"log"
 	"net"
-	"net/http"
 	"tunnel"
+	"sync"
 )
 
 type TeeTunnel struct {
@@ -59,7 +56,7 @@ func (t *TeeTunnel) Setup(tunnel_args []string) error {
 		return errors.New("--forward-to not specified")
 	}
 
-	if err := t.openLogFile(); err != nil {	
+	if err := t.openLogFile(); err != nil {
 		return err
 	}
 
@@ -73,19 +70,6 @@ func (t *TeeTunnel) ConnectionHandler(in_conn net.Conn) {
 
 	remote_addr := "[" + in_conn.RemoteAddr().String() + "]"
 
-	in_buffer := bufio.NewReader(in_conn)
-	in_req, err := http.ReadRequest(in_buffer)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	body, _ := ioutil.ReadAll(in_req.Body)
-
-	in_req2, err := http.NewRequest(in_req.Method, in_req.URL.String(), bytes.NewReader(body))
-	in_req2.Header = in_req.Header
-
-
 	main_conn, err := net.Dial("tcp", t.Main)
 	if err != nil {
 		log.Println(remote_addr, err)
@@ -93,20 +77,35 @@ func (t *TeeTunnel) ConnectionHandler(in_conn net.Conn) {
 	}
 	defer main_conn.Close()
 
-	fwd_conn, err := net.Dial("tcp", t.ForwardTo)
+	/*fwd_conn, err := net.Dial("tcp", t.ForwardTo)
 	if err != nil {
 		log.Println(remote_addr, err)
 		return
 	}
-	defer fwd_conn.Close()
+	defer fwd_conn.Close()*/
+
+	//rrw := &ReconnectWriter{c: fwd_conn, remote: t.ForwardTo}
+	rrw := &ReconnectWriter{remote: t.ForwardTo}
+
+	//mw := io.MultiWriter(main_conn, fwd_conn)
+	mw := io.MultiWriter(main_conn, rrw)
+	tr := io.TeeReader(main_conn, t.file)
+
+	wg := sync.WaitGroup{}
+
+	wg.Add(2)
 
 	go func() {
-		in_req.Write(main_conn)
-		io.Copy(in_conn, main_conn)
+		defer wg.Done()
+		io.Copy(mw, in_conn)
 	}()
 
-	in_req2.Write(fwd_conn)
-	io.Copy(t.file, fwd_conn)
+	go func() {
+		defer wg.Done()
+		io.Copy(in_conn, tr)
+	}()
+
+	wg.Wait()
 
 }
 
